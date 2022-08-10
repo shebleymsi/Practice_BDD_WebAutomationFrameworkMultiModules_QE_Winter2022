@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Practice_BDD_WebAutomationFrameworkMultiModules_QE_Winter2022</artifactId>
+        <groupId>com.amazon</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>Amazon</artifactId>
+
+
+    <dependencies>
+
+        <!--        Parent ====>Generic ====> Amazon-->
+
+        <dependency>
+            <groupId>com.amazon</groupId>
+            <artifactId>Generic</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazon</groupId>
+            <artifactId>Cigna</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <!--        https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-source-and-target.html-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <!--                    <release>16</release>-->
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <!--                            If JDK 11 then comment below line-->
+                        <!--                        <arg>&#45;&#45;enable-preview</arg>-->
+                        <arg>-Xlint:all</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                        <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED</arg>
+                    </compilerArgs>
+                    <!--for unmappable characters in classes-->
+                    <encoding>UTF-8</encoding>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <!--for lombok annotations to resolve-->
+                    <!--contradictory to maven, intelliJ fails with this-->
+
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.24</version>
+                        </path>
+                    </annotationProcessorPaths>
+
+
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <!-- TestNG http Error Handle purpose -->
+                    <systemPropertyVariables>
+                        <testng.dtd.http>true</testng.dtd.http>
+                    </systemPropertyVariables>
+                    <!-- Test Fail will be Ignored -->
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <!--Test Runner Files-->
+                    <includes>
+                        <include>**/TestRunner.java</include>
+                        <!--                        <include>**/AmazonRegressionTestRunner.java</include>-->
+                        <!--                        <include>**/AmazonSmokeTestRunner.java</include>-->
+                    </includes>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>target/test-classes/AmazonRegressionTestRunner.xml</suiteXmlFile>
+                        <!--                        <suiteXmlFile>target/test-classes/AmazonSmokeTestRunner.xml</suiteXmlFile>-->
+                        <!--                        <suiteXmlFile>target/test-classes/AmazonTestRunner.xml</suiteXmlFile>-->
+
+
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>net.masterthought</groupId>
+                <artifactId>maven-cucumber-reporting</artifactId>
+                <version>5.6.1</version>
+                <executions>
+                    <execution>
+                        <id>execution</id>
+                        <!--                        <phase>test</phase>-->
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+
+                        <configuration>
+                            <projectName>BDD-AutomationTestSuite</projectName>
+                            <buildNumber>1</buildNumber>
+                            <skip>false</skip>
+                            <outputDirectory>${project.build.directory}/cucumber-reports/advanced-reports
+                            </outputDirectory>
+                            <!--                            Custom Path for Reports-->
+                            <!--                            <outputDirectory>BG-TestAutomation-Reports</outputDirectory>-->
+
+                            <!--   <cucumberOutput>${project.build.directory}/cucumber-reports/cucumber-report.json</cucumberOutput>-->
+                            <!--     <outputDirectory>target/cucumber-reports/cucumber-report-html</outputDirectory>-->
+
+                            <inputDirectory>${project.build.directory}/cucumber-reports</inputDirectory>
+                            <jsonFiles>
+                                <param>**/*.json</param>
+                            </jsonFiles>
+                            <!-- optional, defaults to outputDirectory if not specified -->
+                            <classificationDirectory>${project.build.directory}/classifications
+                            </classificationDirectory>
+                            <classificationFiles>
+                                <!-- supports wildcard or name pattern -->
+                                <param>sample.properties</param>
+                                <param>other.properties</param>
+                            </classificationFiles>
+                            <!--                            <parallelTesting>false</parallelTesting>-->
+                            <!-- optional, set true to group features by its Ids -->
+                            <mergeFeaturesById>false</mergeFeaturesById>
+                            <!-- optional, set true to get a final report with latest results of the same test from different test runs -->
+                            <mergeFeaturesWithRetest>false</mergeFeaturesWithRetest>
+                            <!-- optional, set true to fail build on test failures -->
+                            <checkBuildResult>false</checkBuildResult>
+                            <classificationDirectory>${project.build.directory}/cucumber-reports
+                            </classificationDirectory>
+                            <checkBuildResult>false</checkBuildResult>
+                        </configuration>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+
+        </plugins>
+
+
+    </build>
+
+
+</project>
